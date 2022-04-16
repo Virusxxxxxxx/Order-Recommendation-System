@@ -1,11 +1,12 @@
 from dao.userDao import userDao
 from dataStructure.requestDomain import User
 
+secret_dic = "1 1 4 5 1 4 1 2 1 3 2 6 3".split(" ")
+
 
 def tokenGen(user: User):
-    token = user.name + user.password
+    token = user.name + "||" + user.password
     token = list(token)
-    secret_dic = "1 1 4 5 1 4 1 9 1 9 8 1 0".split(" ")
     for i in range(len(token)):
         token[i] = chr(ord(token[i]) + int(secret_dic[i % 13]))
     token = ''.join(token)
@@ -19,3 +20,13 @@ def validateToken(token, user):
         if token == valid_token:
             return True
     return False
+
+
+def tokenParse(token):
+    token = list(token)
+    for i in range(len(token)):
+        token[i] = chr(ord(token[i]) - int(secret_dic[i % 13]))
+    token = ''.join(token)
+    user = User
+    user.name, user.password = token.split("||")
+    return user

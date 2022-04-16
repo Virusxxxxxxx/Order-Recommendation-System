@@ -1,6 +1,6 @@
 import datetime
 
-from sqlalchemy import create_engine, Column, Integer, String, DateTime
+from sqlalchemy import create_engine, Column, Integer, String, DateTime, Float
 from sqlalchemy.orm import declarative_base
 
 # 创建引擎
@@ -31,14 +31,17 @@ class Meal(Base):
     name = Column(String(64), unique=True)  # 名字
     description = Column(String(1000))  # 描述
     price = Column(Integer)  # 价格
-    classification = Column(String(64))  # 分类
+    category = Column(String(64))  # 分类
+    mean_score = Column(Float)  # 平均评分
+    sales_num = Column(Integer)  # 销量
 
     # __repr__方法用于输出该类的对象被print()时输出的字符串
     def __repr__(self):
-        return "<Meal(name='%s', description='%s', price='%d', classification='%s')>" % (
-            self.name, self.password, self.price, self.classification)
+        return "<Meal(name='%s', description='%s', price='%d', category='%s', mean_score='%f', sales_num='%d')>" % (
+            self.name, self.password, self.price, self.category, self.mean_score, self.sales_num)
 
 
+# 定义评论表
 class Comment(Base):
     __tablename__ = 'comments'
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -53,5 +56,7 @@ class Comment(Base):
         return "<Comment(content='%s', score='%d', user_id='%d', meal_id='%d')>" % (
             self.content, self.score, self.user_id, self.meal_id)
 
+
+# TODO 定义订单表 外键限制
 
 Base.metadata.create_all(engine, checkfirst=True)

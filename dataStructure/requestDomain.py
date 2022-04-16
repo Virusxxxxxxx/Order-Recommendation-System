@@ -12,11 +12,13 @@ class User(BaseModel):
 
 class Meal(BaseModel):
     id: Optional[int] = None
-    pic: str
+    pic: Optional[str] = None
     name: str
-    description: str
-    price: int
-    classification: str
+    description: Optional[str] = None
+    price: Optional[int] = None
+    category: Optional[str] = None
+    mean_score: Optional[float] = None
+    sales_num: Optional[int] = None
 
 
 class Comment(BaseModel):
@@ -26,3 +28,11 @@ class Comment(BaseModel):
     content: str
     score: int
     time: datetime
+
+
+# TODO 定义订单结构
+class Order(BaseModel):
+    id: Optional[int] = None
+    user_id: int
+    meal_id: int
+    num: int
