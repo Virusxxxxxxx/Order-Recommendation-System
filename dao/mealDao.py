@@ -1,10 +1,9 @@
-from fastapi import Depends
-
 from dao.IDao import IDao
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy import create_engine
 from dataStructure.sqlDomain import Meal
 from dataStructure import requestDomain
+from fastapi import Depends
 
 
 class mealDao(IDao):
@@ -36,13 +35,13 @@ class mealDao(IDao):
             new_meal.name = meal.name
         if meal.description is not None and len(meal.description) != 0:
             new_meal.description = meal.description
-        if meal.price is not None and len(meal.price) != 0:
+        if meal.price is not None:
             new_meal.price = meal.price
         if meal.category is not None and len(meal.category) != 0:
             new_meal.category = meal.category
-        if meal.mean_score is not None and len(meal.mean_score) != 0:
+        if meal.mean_score is not None:
             new_meal.mean_score = meal.mean_score
-        if meal.sales_num is not None and len(meal.sales_num) != 0:
+        if meal.sales_num is not None:
             new_meal.sales_num = meal.sales_num
         db.commit()
         return True
@@ -52,7 +51,7 @@ class mealDao(IDao):
         db.commit()
         return del_cnt
 
-    def queryItemById(self, meal, db: Session = Depends(getSession)):
+    def queryItemById(self, meal: requestDomain.Meal, db: Session = Depends(getSession)):
         new_meal = db.query(Meal).filter(Meal.id == meal.id).first()
         return new_meal
 
@@ -63,5 +62,8 @@ class mealDao(IDao):
     def queryItemByCategory(self, category, db: Session = Depends(getSession)):
         return db.query(Meal).filter(Meal.category == category).all()
 
-    def queryAllItems(self, skip, limit, db: Session = Depends(getSession)):
+    def queryAllItems(self, skip=0, limit=10, db: Session = Depends(getSession)):
         return db.query(Meal).offset(skip).limit(limit).all()
+
+    def queryHotItems(self, limit=5, db: Session = Depends(getSession)):
+        return db.query(Meal).order_by(Meal.sales_num.desc()).limit(limit).all()
