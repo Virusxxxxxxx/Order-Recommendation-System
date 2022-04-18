@@ -15,7 +15,7 @@ class Meal(BaseModel):
     pic: Optional[str] = None
     name: str
     description: Optional[str] = None
-    price: Optional[int] = None
+    price: Optional[float] = None
     category: Optional[str] = None
     mean_score: Optional[float] = None
     sales_num: Optional[int] = None
@@ -34,5 +34,6 @@ class Comment(BaseModel):
 class Order(BaseModel):
     id: Optional[int] = None
     user_id: int
-    meal_id: int
-    num: int
+    order_time: datetime
+    order_amount: float
+    meal_id_list: str

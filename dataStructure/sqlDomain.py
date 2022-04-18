@@ -14,7 +14,7 @@ Base = declarative_base()
 class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(64), unique=True, nullable=False)
+    name = Column(String(64), unique=True)
     password = Column(String(64))
 
     # __repr__方法用于输出该类的对象被print()时输出的字符串
@@ -28,9 +28,9 @@ class Meal(Base):
     __tablename__ = 'meals'
     id = Column(Integer, primary_key=True, autoincrement=True)
     pic = Column(String(60000))  # base64存图片
-    name = Column(String(64), unique=True, nullable=False)  # 名字
+    name = Column(String(64), unique=True)  # 名字
     description = Column(String(1000))  # 描述
-    price = Column(Integer, nullable=False)  # 价格
+    price = Column(Float)  # 价格
     category = Column(String(64))  # 分类
     mean_score = Column(Float)  # 平均评分
     sales_num = Column(Integer)  # 销量
@@ -63,12 +63,12 @@ class Order(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('users.id'))  # 订单用户 id
     order_time = Column(DateTime, default=datetime.datetime.now)  # 订单时间
-    order_amount = Column(Integer)  # 订单金额
+    order_amount = Column(Float)  # 订单金额
     meal_id_list = Column(String(1000))  # 订单餐品 id
 
     def __repr__(self):
         return "<Order(user_id='%s', order_time='%s', order_amount='%d', meal_list='%s')>" % (
-            self.user_id, str(self.order_time), self.order_amount, self.meal_id_list)
+            self.user_id, repr(self.order_time), self.order_amount, self.meal_id_list)
 
 
 Base.metadata.create_all(engine, checkfirst=True)
