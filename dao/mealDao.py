@@ -3,7 +3,6 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 from dataStructure.sqlDomain import Meal
 from dataStructure import requestDomain
-from fastapi import Depends
 
 
 class mealDao(IDao):
