@@ -59,6 +59,18 @@ class mealDao(IDao):
         db.close()
         return new_meal
 
+    def queryItemById(self, meal_id: int):
+        db = self.getSession()
+        new_meal = db.query(Meal).filter(Meal.id == meal_id).first()
+        db.close()
+        return new_meal
+
+    def queryItemByName(self, meal: requestDomain.Meal):
+        db = self.getSession()
+        new_meal = db.query(Meal).filter(Meal.name == meal.name).first()
+        db.close()
+        return new_meal
+
     def queryItemByKeyWords(self, keywords):
         # 模糊查询
         db = self.getSession()

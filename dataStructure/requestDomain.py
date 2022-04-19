@@ -30,7 +30,6 @@ class Comment(BaseModel):
     time: datetime
 
 
-# TODO 定义订单结构
 class Order(BaseModel):
     id: Optional[int] = None
     user_id: int

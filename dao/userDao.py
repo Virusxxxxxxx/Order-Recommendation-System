@@ -36,6 +36,12 @@ class userDao(IDao):
         session.close()
         return new_user
 
+    def queryItemByName(self, name):
+        session = self.getSession()
+        new_user = session.query(User).filter(User.name == name).first()
+        session.close()
+        return new_user
+
     def modItem(self, user):
         session = self.getSession()
         new_user = session.query(User).filter(User.id == user.id).first()

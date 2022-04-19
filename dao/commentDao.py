@@ -1,6 +1,8 @@
 from dao.IDao import IDao
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
+
+from dao.userDao import userDao
 from dataStructure.sqlDomain import Comment
 from dataStructure import requestDomain
 from fastapi import Depends
@@ -15,7 +17,6 @@ class commentDao(IDao):
         return Session()
 
     def addItem(self, comment: requestDomain.Comment):
-        # TODO 增加评分的时候自动更新 meal 的平均分？
         db = self.getSession()
         db_comment = Comment(**comment.dict())
         db.add(db_comment)
@@ -46,8 +47,10 @@ class commentDao(IDao):
         db.close()
         return comment_list
 
-    def queryItemByUserId(self, user_id, skip=0, limit=10):
+    def queryItemByUserName(self, user_name, skip=0, limit=10):
         db = self.getSession()
-        comment_list = db.query(Comment).filter(Comment.user_id == user_id).offset(skip).limit(limit).all()
+        user = userDao().queryItemByName(user_name)
+        print("user.id = ", user.id)
+        comment_list = db.query(Comment).filter(Comment.user_id == user.id).offset(skip).limit(limit).all()
         db.close()
         return comment_list
