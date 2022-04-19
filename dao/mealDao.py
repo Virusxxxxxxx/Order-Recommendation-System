@@ -55,9 +55,9 @@ class mealDao(IDao):
         new_meal = db.query(Meal).filter(Meal.id == meal.id).first()
         return new_meal
 
-    def queryItemByName(self, name, db: Session = Depends(getSession)):
+    def queryItemByKeyWords(self, keywords, db: Session = Depends(getSession)):
         # 模糊查询
-        return db.query(Meal).filter(Meal.name.like('%'+name+'%')).all()
+        return db.query(Meal).filter(Meal.name.like('%'+keywords+'%')).all()
 
     def queryItemByCategory(self, category, db: Session = Depends(getSession)):
         return db.query(Meal).filter(Meal.category == category).all()

@@ -1,13 +1,15 @@
 import datetime
 
 from sqlalchemy import create_engine, Column, Integer, String, DateTime, Float, ForeignKey
-from sqlalchemy.orm import declarative_base
+# from sqlalchemy.orm import declarative_base
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
 
 # 创建引擎
 engine = create_engine('sqlite:///system.db?check_same_thread=False', echo=True)
 
 # 定义映射
-Base = declarative_base()
+Base = declarative_base(bind=engine, name='Base')
 
 
 # 定义用户表
@@ -16,6 +18,8 @@ class User(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(64), unique=True)
     password = Column(String(64))
+    my_order = relationship('Order', back_populates='user')  # 外键关联，back_populates来指定反向访问 orders 表的属性
+    my_comment = relationship('Comment', back_populates='user')
 
     # __repr__方法用于输出该类的对象被print()时输出的字符串
     def __repr__(self):
@@ -34,6 +38,7 @@ class Meal(Base):
     category = Column(String(64))  # 分类
     mean_score = Column(Float)  # 平均评分
     sales_num = Column(Integer)  # 销量
+    meal_comment = relationship('Comment', back_populates='meal')  # 外键关联，back_populates来指定反向访问的 comments 表的属性
 
     # __repr__方法用于输出该类的对象被print()时输出的字符串
     def __repr__(self):
@@ -50,6 +55,8 @@ class Comment(Base):
     content = Column(String(6000))
     score = Column(Integer)
     time = Column(DateTime, default=datetime.datetime.now)
+    user = relationship('User', back_populates='my_comment')  # 外键关联，back_populates来指定反向访问的 users 表的属性
+    meal = relationship('Meal', back_populates='meal_comment')
 
     # __repr__方法用于输出该类的对象被print()时输出的字符串
     def __repr__(self):
@@ -57,7 +64,6 @@ class Comment(Base):
             self.content, self.score, self.user_id, self.meal_id)
 
 
-# TODO 定义订单表 外键限制
 class Order(Base):
     __tablename__ = 'orders'
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -65,6 +71,7 @@ class Order(Base):
     order_time = Column(DateTime, default=datetime.datetime.now)  # 订单时间
     order_amount = Column(Float)  # 订单金额
     meal_id_list = Column(String(1000))  # 订单餐品 id
+    user = relationship('User', back_populates='my_order')  # 外键关联，back_populates来指定反向访问 users 表的属性
 
     def __repr__(self):
         return "<Order(user_id='%s', order_time='%s', order_amount='%d', meal_list='%s')>" % (
