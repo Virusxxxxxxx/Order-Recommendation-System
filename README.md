@@ -5,8 +5,10 @@
     |----dataStructure 项目中使用到的数据结构
         |----requestDomain.py pydantic数据验证文件
         |----sqlDomain.py 数据库表结构文件
+    |----rest REST api 文件
     |----utils 小工具
         |----validateUtil.py 验证用户登录相关工具
+        |----itemCF.py 基于物品的协同过滤
     |----app.py 项目主文件
     |----system.db sqlite数据库文件
     
