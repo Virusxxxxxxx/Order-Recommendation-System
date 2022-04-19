@@ -34,6 +34,12 @@ class commentDao(IDao):
         db.close()
         return new_comment
 
+    def queryAllItems(self):
+        db = self.getSession()
+        comment_list = db.query(Comment).all()
+        db.close()
+        return comment_list
+
     def delItem(self, comment: requestDomain.Comment):
         db = self.getSession()
         del_cnt = db.query(Comment).filter(Comment.id == comment.id).delete()
@@ -50,7 +56,6 @@ class commentDao(IDao):
     def queryItemByUserName(self, user_name, skip=0, limit=10):
         db = self.getSession()
         user = userDao().queryItemByName(user_name)
-        print("user.id = ", user.id)
         comment_list = db.query(Comment).filter(Comment.user_id == user.id).offset(skip).limit(limit).all()
         db.close()
         return comment_list
