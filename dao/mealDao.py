@@ -1,5 +1,5 @@
 from dao.IDao import IDao
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 from dataStructure.sqlDomain import Meal
 from dataStructure import requestDomain
@@ -9,23 +9,22 @@ from fastapi import Depends
 class mealDao(IDao):
 
     engine = create_engine('sqlite:///system.db?check_same_thread=False', echo=True)
-    SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False, expire_on_commit=True)
 
     def getSession(self):
-        session = self.SessionLocal()
-        try:
-            yield session
-        finally:
-            session.close()
+        Session = sessionmaker(bind=self.engine, autoflush=False, autocommit=False, expire_on_commit=True)
+        return Session()
 
-    def addItem(self, meal: requestDomain.Meal, db: Session = Depends(getSession)):
+    def addItem(self, meal: requestDomain.Meal):
+        db = self.getSession()
         db_meal = Meal(**meal.dict())
         db.add(db_meal)
         db.commit()
         db.refresh(db_meal)
+        db.close()
         return db_meal
 
-    def modItem(self, meal: requestDomain.Meal, db: Session = Depends(getSession)):
+    def modItem(self, meal: requestDomain.Meal):
+        db = self.getSession()
         new_meal = db.query(Meal).filter_by(id=meal.id).first()
         if new_meal is None:
             return False
@@ -44,26 +43,43 @@ class mealDao(IDao):
         if meal.sales_num is not None:
             new_meal.sales_num = meal.sales_num
         db.commit()
+        db.close()
         return True
 
-    def delItem(self, meal: requestDomain.Meal, db: Session = Depends(getSession)):
+    def delItem(self, meal: requestDomain.Meal):
+        db = self.getSession()
         del_cnt = db.query(Meal).filter(Meal.id == meal.id).delete()
         db.commit()
+        db.close()
         return del_cnt
 
-    def queryItemById(self, meal: requestDomain.Meal, db: Session = Depends(getSession)):
+    def queryItem(self, meal: requestDomain.Meal):
+        db = self.getSession()
         new_meal = db.query(Meal).filter(Meal.id == meal.id).first()
+        db.close()
         return new_meal
 
-    def queryItemByKeyWords(self, keywords, db: Session = Depends(getSession)):
+    def queryItemByKeyWords(self, keywords):
         # 模糊查询
-        return db.query(Meal).filter(Meal.name.like('%'+keywords+'%')).all()
+        db = self.getSession()
+        meal_list = db.query(Meal).filter(Meal.name.like('%'+keywords+'%')).all()
+        db.close()
+        return meal_list
 
-    def queryItemByCategory(self, category, db: Session = Depends(getSession)):
-        return db.query(Meal).filter(Meal.category == category).all()
+    def queryItemByCategory(self, category):
+        db = self.getSession()
+        meal_list = db.query(Meal).filter(Meal.category == category).all()
+        db.close()
+        return meal_list
 
-    def queryAllItems(self, skip=0, limit=10, db: Session = Depends(getSession)):
-        return db.query(Meal).offset(skip).limit(limit).all()
+    def queryAllItems(self, skip=0, limit=10):
+        db = self.getSession()
+        meal_list = db.query(Meal).offset(skip).limit(limit).all()
+        db.close()
+        return meal_list
 
-    def queryHotItems(self, limit=5, db: Session = Depends(getSession)):
-        return db.query(Meal).order_by(Meal.sales_num.desc()).limit(limit).all()
+    def queryHotItems(self, limit=5):
+        db = self.getSession()
+        meal_list = db.query(Meal).order_by(Meal.sales_num.desc()).limit(limit).all()
+        db.close()
+        return meal_list
