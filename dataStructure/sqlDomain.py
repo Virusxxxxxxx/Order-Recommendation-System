@@ -68,14 +68,16 @@ class Order(Base):
     __tablename__ = 'orders'
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('users.id'))  # 订单用户 id
-    order_time = Column(DateTime, default=datetime.datetime.now)  # 订单时间
+    meal_id_list = Column(String(1000))  # 订单餐品 id 列表  {'meal_id1': count1, 'meal_id2': count2, ...}
+    start_time = Column(DateTime, default=datetime.datetime.now)  # 订单开始时间，从 comment 开始
+    end_time = Column(DateTime, default=datetime.datetime.now)  # 订单结束时间， 从 done 结束
+    order_state = Column(String(64))  # 订单状态 selecting(点餐) / comment(提交) / doing(核销接单) / done(完成) / finish(评论完成)
     order_amount = Column(Float)  # 订单金额
-    meal_id_list = Column(String(1000))  # 订单餐品 id
     user = relationship('User', back_populates='my_order')  # 外键关联，back_populates来指定反向访问 users 表的属性
 
     def __repr__(self):
-        return "<Order(user_id='%s', order_time='%s', order_amount='%d', meal_list='%s')>" % (
-            self.user_id, repr(self.order_time), self.order_amount, self.meal_id_list)
+        return "<Order(user_id='%s', meal_list='%s', order_state='%s', order_amount='%d')>" % (
+            self.user_id, self.meal_id_list, self.order_state, self.order_amount)
 
 
 Base.metadata.create_all(engine, checkfirst=True)

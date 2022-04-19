@@ -33,6 +33,8 @@ class Comment(BaseModel):
 class Order(BaseModel):
     id: Optional[int] = None
     user_id: int
-    order_time: datetime
-    order_amount: float
     meal_id_list: str
+    start_time: datetime
+    end_time: datetime
+    order_state: str
+    order_amount: float
