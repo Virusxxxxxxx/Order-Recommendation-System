@@ -1,8 +1,12 @@
 import json
 from fastapi import APIRouter, HTTPException
+
+from dao.commentDao import commentDao
 from dao.mealDao import mealDao
 from dao.orderDao import orderDao
+from dao.userDao import userDao
 from dataStructure.requestDomain import Meal, Order, Comment, User
+from utils.itemCF import ItemBasedCF
 from utils.validateUtil import tokenParse
 
 appMeal = APIRouter()
@@ -34,9 +38,19 @@ async def getMealsByKeyWords(token, keywords):
 
 
 # 用户 根据用户兴趣获取菜品
-@appMeal.get("/getMealsByInterest/{token}/{category}")
-async def getMealsByInterest(token, category="default"):
-    pass
+@appMeal.get("/getMealsByInterest/{token}", summary='菜品推荐')
+async def getMealsByInterest(token):
+    user = tokenParse(token)
+    user = userDao().queryItemByName(user.name)
+    # 直接现场算相似度，实时推荐，冲！
+    allComment = commentDao().queryAllItems()
+    itemCF = ItemBasedCF()
+    recommend_list = itemCF.recommend(allComment, user.id)
+    recommend_list = [item[0] for item in recommend_list]
+    meal_list = []
+    for meal_id in recommend_list:
+        meal_list.append(mealDao().queryItemById(meal_id))
+    return meal_list
 
 
 @appMeal.post("/getMealsListByOrder/{token}",
@@ -54,7 +68,7 @@ async def getMealsListByOrder(token, order: Order):
 
 
 # 管理员 添加菜品
-@appMeal.post("/addMeal/{token}")
+@appMeal.post("/addMeal/{token}", summary='添加菜品')
 async def addMeal(token, meal: Meal):
     db_meal_by_id = mealDao().queryItem(meal)
     db_meal_by_name = mealDao().queryItemByName(meal)
