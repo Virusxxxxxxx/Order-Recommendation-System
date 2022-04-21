@@ -54,8 +54,27 @@ async def orderMeal(token, meal: Meal, num: int):
 # 管理员 核销订单
 @appOrder.post("/writeOffOrder/{token}", summary='提交订单、核销订单合并')
 async def writeOffOrder(token, order: Order):
-    # TODO 形参报错
-    order.order_state = 'doing'
-    if orderDao().modItem(order):
-        return {"code": 0}
-    return {"code": -1}
+    user = tokenParse(token)
+    if user.name != 'admin':
+        return {"code": -1, "message": "permission denied"}
+    cur_order = orderDao().queryItem(order)
+    if cur_order is None:
+        return {"code": -1, "message": "order id not found!"}
+    else:
+        cur_order.order_state = 'doing'
+        if orderDao().modItem(cur_order):
+            return {"code": 0}
+
+
+@appOrder.post("/doneOrder/{token}", summary='管理员 完成订单')
+async def doneOrder(token, order: Order):
+    user = tokenParse(token)
+    if user.name != 'admin':
+        return {"code": -1, "message": "permission denied"}
+    cur_order = orderDao().queryItem(order)
+    if cur_order is None:
+        return {"code": -1, "message": "order id not found!"}
+    else:
+        cur_order.order_state = 'done'
+        if orderDao().modItem(cur_order):
+            return {"code": 0}

@@ -30,6 +30,7 @@ def create_fake_comment():
 
 def create_fake_users():
     user = pd.DataFrame(columns=('id', 'name', 'password'))
+    user = user.append(pd.DataFrame({'id': [200], 'name': ['admin'], 'password': ['admin']}))
     for i in range(200):
         user_id = i
         user_name = f'user{i}'

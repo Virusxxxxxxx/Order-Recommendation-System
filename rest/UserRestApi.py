@@ -5,6 +5,7 @@ from utils.validateUtil import tokenGen, validateToken, tokenParse
 
 appUser = APIRouter()
 
+
 # 所有用户 登录
 @appUser.post("/login")
 async def login(user: User):

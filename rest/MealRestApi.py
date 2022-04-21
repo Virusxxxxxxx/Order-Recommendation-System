@@ -70,6 +70,9 @@ async def getMealsListByOrder(token, order: Order):
 # 管理员 添加菜品
 @appMeal.post("/addMeal/{token}", summary='添加菜品')
 async def addMeal(token, meal: Meal):
+    user = tokenParse(token)
+    if user.name != 'admin':
+        return {"code": -1, "message": "permission denied"}
     db_meal_by_id = mealDao().queryItem(meal)
     db_meal_by_name = mealDao().queryItemByName(meal)
     if db_meal_by_id or db_meal_by_name:
@@ -80,6 +83,9 @@ async def addMeal(token, meal: Meal):
 # 管理员 删除菜品
 @appMeal.post("/delMeal/{token}")
 async def delMeal(token, meal: Meal):
+    user = tokenParse(token)
+    if user.name != 'admin':
+        return {"code": -1, "message": "permission denied"}
     if mealDao().delItem(meal) > 0:
         return {"code": 0}
     return {"code": -1}
@@ -88,6 +94,9 @@ async def delMeal(token, meal: Meal):
 # 管理员 修改菜品
 @appMeal.post("/modMeal/{token}")
 async def modMeal(token, meal: Meal):
+    user = tokenParse(token)
+    if user.name != 'admin':
+        return {"code": -1, "message": "permission denied"}
     if mealDao().modItem(meal):
         return {"code": 0}
     return {"code": -1}
