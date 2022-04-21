@@ -7,6 +7,7 @@ from dao.orderDao import orderDao
 from dao.userDao import userDao
 from dataStructure.requestDomain import Meal, Order, Comment, User
 from utils.itemCF import ItemBasedCF
+from utils.preProcessUtils import sortCategories
 from utils.validateUtil import tokenParse
 
 appMeal = APIRouter()
@@ -16,11 +17,34 @@ appMeal = APIRouter()
 @appMeal.get("/getAllMeals/{token}", summary='获取所有菜品')
 async def getAllMeals(token, limit=-1):
     user = tokenParse(token)
-    return mealDao().queryAllItems(limit=limit)
+    meals = mealDao().queryAllItems(limit=limit)
+    categories = []
+    for meal in meals:
+        if meal.category not in categories:
+            categories.append(meal.category)
+            print("添加", meal.category)
+    categories = sortCategories(categories)
+    allCat = []
+    i = 0
+    for category in categories:
+        temp = []
+        catDic = {}
+        for meal in meals:
+            if meal.category == category:
+                temp.append(meal)
+        catDic['id'] = i
+        i += 1
+        catDic['name'] = category
+        catDic[
+            'category_image_url'] = 'https://go.cdn.heytea.com/storage/category/2020/05/02' \
+                                    '/c9d862a735af48d280ab8b21a2315514.jpg '
+        catDic['products'] = temp
+        allCat.append(catDic)
+    return allCat
 
 
 # 获取热门菜品
-@appMeal.get("/getAllMeals/{token}", summary='获取热门菜品')
+@appMeal.get("/getHotMeals/{token}", summary='获取热门菜品')
 async def getHotMeals(token, limit=-1):
     return mealDao().queryHotItems(limit=limit)
 
