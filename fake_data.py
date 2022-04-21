@@ -1,3 +1,4 @@
+import json
 import random
 from datetime import datetime
 from pathlib import Path
@@ -10,6 +11,7 @@ from dataStructure.sqlDomain import Base
 
 
 def create_fake_comment():
+    # 200 个用户每个用户随机生成 15 个评分
     comment = pd.DataFrame(columns=('id', 'user_id', 'meal_id', 'content', 'score', 'time'))
     index = 0
     for user in range(200):
@@ -29,6 +31,7 @@ def create_fake_comment():
 
 
 def create_fake_users():
+    # 随机生成 200 个用户
     user = pd.DataFrame(columns=('id', 'name', 'password'))
     user = user.append(pd.DataFrame({'id': [200], 'name': ['admin'], 'password': ['admin']}))
     for i in range(200):
@@ -40,6 +43,7 @@ def create_fake_users():
 
 
 def create_fake_meals():
+    # 随机生成 50 个商品
     meal = pd.DataFrame(columns=('id', 'pic', 'name', 'description', "price", "category", "mean_score", "sales_num"))
     for i in range(50):
         id = i
@@ -54,6 +58,35 @@ def create_fake_meals():
             {'id': [id], 'pic': [pic], 'name': [name], 'description': [description], 'price': [price],
              'category': [category], 'mean_score': [mean_score], 'sales_num': [sales_num]}))
     meal.to_csv('./data/Meal.csv', index=False)
+
+
+def create_fake_order():
+    # 200 个用户每个用户随机生成 5 单
+    order = pd.DataFrame(columns=('id', 'user_id', 'meal_id_list', 'start_time', "end_time", "order_state", "order_amount"))
+    ids = random.sample(range(0, 1000), 1000)
+    cnt = 0
+    for i in range(200):
+        for j in range(5):
+            id = ids[cnt]
+            user_id = i
+            start_time = datetime.now()
+            end_time = datetime.now()
+            order_state = "finish"
+            order_amount = round(random.uniform(10, 200), 1)
+            meal_id_list = {}
+
+            meal_nums = random.randint(1, 3)
+            meal_ids = random.sample(range(0, 50), meal_nums)
+            meal_quantity = random.sample(range(1, 6), meal_nums)
+            for k in range(0, meal_nums):
+                meal_id_list[str(meal_ids[k])] = meal_quantity[k]
+            order = order.append(pd.DataFrame({
+                'id': [id], 'user_id': [user_id], 'meal_id_list': [json.dumps(meal_id_list)],
+                'start_time': [start_time], 'end_time': [end_time], 'order_state': [order_state],
+                'order_amount': [order_amount]
+            }))
+            cnt += 1
+    order.to_csv('./data/Order.csv', index=False)
 
 
 def csv_to_sql():
@@ -72,6 +105,10 @@ def csv_to_sql():
     df_comment = pandas.read_csv(comment)
     df_comment.to_sql(con=engine, index=False, name='comments', if_exists='replace')
 
+    order = './data/Order.csv'
+    df_order = pandas.read_csv(order)
+    df_order.to_sql(con=engine, index=False, name='orders', if_exists='replace')
+
 
 def create_fake_data():
     dataPath = Path('./data')
@@ -80,10 +117,11 @@ def create_fake_data():
     create_fake_users()
     create_fake_meals()
     create_fake_comment()
+    create_fake_order()
 
 
 if __name__ == '__main__':
     # 生成的 csv 文件存放在 data 目录下
-    create_fake_data()
+    # create_fake_data()
     # 将 csv 写入数据库，生成 system.db
     csv_to_sql()
