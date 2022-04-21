@@ -57,3 +57,10 @@ class orderDao(IDao):
         order = db.query(Order).filter(Order.user_id == user_id).order_by(Order.start_time.desc()).first()
         db.close()
         return order
+
+    def queryOrderByUserId(self, user_id):
+        # 查询用户所有历史订单
+        db = self.getSession()
+        order_list = db.query(Order).filter(Order.user_id == user_id).all()
+        db.close()
+        return order_list

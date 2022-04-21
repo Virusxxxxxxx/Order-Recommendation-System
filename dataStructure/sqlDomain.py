@@ -76,7 +76,7 @@ class Order(Base):
     user = relationship('User', back_populates='my_order')  # 外键关联，back_populates来指定反向访问 users 表的属性
 
     def __repr__(self):
-        return "<Order(user_id='%s', meal_list='%s', order_state='%s', order_amount='%d')>" % (
+        return "<Order(user_id='%s', meal_id_list='%s', order_state='%s', order_amount='%d')>" % (
             self.user_id, self.meal_id_list, self.order_state, self.order_amount)
 
 
