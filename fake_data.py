@@ -6,7 +6,9 @@ from pathlib import Path
 import pandas
 import pandas as pd
 from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
+from dataStructure.sqlDomain import User, Order, Comment, Meal
 from dataStructure.sqlDomain import Base
 
 
@@ -92,22 +94,73 @@ def create_fake_order():
 def csv_to_sql():
     engine = create_engine('sqlite:///system.db?check_same_thread=False', echo=True)
     Base.metadata.create_all(engine)
+    session = sessionmaker()
+    session.configure(bind=engine)
+    s = session()
 
     user = './data/User.csv'
     df_user = pandas.read_csv(user)
-    df_user.to_sql(con=engine, index=False, name='users', if_exists='replace')
+    for _, row in df_user.iterrows():
+        record = User(
+            **{
+                'id': row[0],
+                'name': row[1],
+                'password': row[2]
+            }
+        )
+        s.add(record)
+    s.commit()
 
     meal = './data/Meal.csv'
     df_meal = pandas.read_csv(meal)
-    df_meal.to_sql(con=engine, index=False, name='meals', if_exists='replace')
+    for _, row in df_meal.iterrows():
+        record = Meal(
+            **{
+                'id': row[0],
+                'pic': row[1],
+                'name': row[2],
+                'description': row[3],
+                'price': row[4],
+                'category': row[5],
+                'mean_score': row[6],
+                'sales_num': row[7],
+            }
+        )
+        s.add(record)
+    s.commit()
 
     comment = './data/Comment.csv'
     df_comment = pandas.read_csv(comment)
-    df_comment.to_sql(con=engine, index=False, name='comments', if_exists='replace')
+    for _, row in df_comment.iterrows():
+        record = Comment(
+            **{
+                'id': row[0],
+                'user_id': row[1],
+                'meal_id': row[2],
+                'content': row[3],
+                'score': row[4],
+                'time': datetime.now()
+            }
+        )
+        s.add(record)
+    s.commit()
 
     order = './data/Order.csv'
     df_order = pandas.read_csv(order)
-    df_order.to_sql(con=engine, index=False, name='orders', if_exists='replace')
+    for _, row in df_order.iterrows():
+        record = Order(
+            **{
+                'id': row[0],
+                'user_id': row[1],
+                'meal_id_list': row[2],
+                'start_time': datetime.now(),
+                'end_time': datetime.now(),
+                'order_state': row[5],
+                'order_amount': row[6]
+            }
+        )
+        s.add(record)
+    s.commit()
 
 
 def create_fake_data():

@@ -18,7 +18,6 @@ async def submitOrder(token, meal_id_list: Dict[int, int]):
     user = tokenParse(token)
     user = userDao().queryItemByName(user.name)
     new_order = Order(
-        id=None,
         user_id=user.id,
         meal_id_list=json.dumps(meal_id_list),
         start_time=datetime.now(),
