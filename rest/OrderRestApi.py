@@ -45,7 +45,7 @@ async def getAllOrder(token):
             "paid_at": item.end_time,
             "payment": item.order_amount,
             "total_fee": item.order_amount,
-            "item": await getMealDicByOrder(item)
+            "items": await getMealDicByOrder(item)
         })
     return res
 
@@ -54,18 +54,18 @@ async def getAllOrder(token):
 async def getOrderDetail(token, order: Order):
     cur_order = orderDao().queryItem(order)
     orderDic = {
-        "no": order.id,
+        "no": cur_order.id,
         "shop":
             {
                 "name": 'shop_name'
             },
-        "payment": order.order_amount,
-        "paid_at": order.end_time,
+        "payment": cur_order.order_amount,
+        "paid_at": cur_order.end_time,
         "pickup_no": "666",
         "remarks": "nothing.",
-        "total_fee": order.order_amount,
-        "created_at": order.start_time,
-        "item": await getMealDicByOrder(cur_order)
+        "total_fee": cur_order.order_amount,
+        "created_at": cur_order.start_time,
+        "items": await getMealDicByOrder(cur_order)
     }
     return orderDic
 

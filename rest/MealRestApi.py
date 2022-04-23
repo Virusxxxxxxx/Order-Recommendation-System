@@ -31,11 +31,20 @@ async def getAllMeals(token, limit=-1):
     # 按类别给所有 meal 分组
     allCat = []
     i = 0
+    # 加入推荐列表
+    recom_list = await calRecomByItemCF(user)
+    recomDic = {'id': i,
+                'name': '推荐',
+                'category_image_url': 'https://go.cdn.heytea.com/storage/category/2020/05/02/c9d862a735af48d280ab8b21a2315514.jpg',
+                'products': recom_list}
+    allCat.append(recomDic)
+    i += 1
     for category in categories:
         temp = []
         catDic = {}
         for meal in meals:
             if meal.category == category:
+                meal.category = int(category[-1])
                 temp.append(meal)
         catDic['id'] = i
         i += 1
@@ -44,15 +53,10 @@ async def getAllMeals(token, limit=-1):
             'category_image_url'] = 'https://go.cdn.heytea.com/storage/category/2020/05/02' \
                                     '/c9d862a735af48d280ab8b21a2315514.jpg '
         catDic['products'] = temp
+        catDic['categoryAds'] = []
         allCat.append(catDic)
 
-    # 加入推荐列表
-    recom_list = await calRecomByItemCF(user)
-    recomDic = {'id': i,
-                'name': 'recommendation',
-                'category_image_url': 'https://go.cdn.heytea.com/storage/category/2020/05/02/c9d862a735af48d280ab8b21a2315514.jpg',
-                'products': recom_list}
-    allCat.append(recomDic)
+
 
     return allCat
 
@@ -74,7 +78,9 @@ async def calRecomByItemCF(user):
     recommend_list = [item[0] for item in recommend_list]
     meal_list = []
     for meal_id in recommend_list:
-        meal_list.append(mealDao().queryItemById(meal_id))
+        meal = mealDao().queryItemById(meal_id)
+        meal.category = int(meal.category[-1])
+        meal_list.append(meal)
     return meal_list
 
 

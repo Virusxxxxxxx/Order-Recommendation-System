@@ -47,7 +47,7 @@ def create_fake_meals():
     meal = pd.DataFrame(columns=('id', 'pic', 'name', 'description', "price", "category", "mean_score", "sales_num"))
     for i in range(50):
         id = i
-        pic = f'pic{i}'
+        pic = "https://go.cdn.heytea.com/storage/product/2020/05/01/7bf2447422bf4acb95b1a82366eeba34.jpg"
         name = f'meal{i}'
         description = f'description{i}'
         price = round(random.uniform(10, 30), 1)  # 随机价格 10 ~ 30
@@ -122,6 +122,6 @@ def create_fake_data():
 
 if __name__ == '__main__':
     # 生成的 csv 文件存放在 data 目录下
-    # create_fake_data()
+    create_fake_data()
     # 将 csv 写入数据库，生成 system.db
     csv_to_sql()
