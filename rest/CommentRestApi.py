@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 from dao.commentDao import commentDao
 from dao.mealDao import mealDao
+from dao.userDao import userDao
 from dataStructure.requestDomain import Meal, Order, Comment, User
 from utils.validateUtil import tokenParse
 
@@ -34,6 +35,9 @@ async def delComments(token, comment: Comment):
 # 用户 评论菜品
 @appComment.post("/commentMeal/{token}")
 async def commentMeal(token, comment: Comment):
+    user = tokenParse(token)
+    comment.user_id = userDao().queryItemByName(user.name).id
+    comment.id = None
     if commentDao().addItem(comment):  # 订单完成之后，添加评论，所以不判重
         # 更新平均分
         meal = mealDao().queryItemById(comment.meal_id)

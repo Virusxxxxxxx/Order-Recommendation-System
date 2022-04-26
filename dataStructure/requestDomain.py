@@ -23,11 +23,11 @@ class Meal(BaseModel):
 
 class Comment(BaseModel):
     id: Optional[int] = None
-    user_id: int
+    user_id: Optional[int] = None
     meal_id: int
-    content: str
+    content: Optional[str] = None
     score: int
-    time: datetime
+    time: Optional[datetime] = datetime.now()
 
 
 class Order(BaseModel):

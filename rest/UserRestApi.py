@@ -11,19 +11,19 @@ appUser = APIRouter()
 async def login(user: User):
     sel_user = userDao().queryItem(user)
     if sel_user is None:
-        return {"code": -1}
+        if userDao().addItem(user):
+            return {"code": 0, "token": tokenGen(user)}
+        return {"code": -2}
     if sel_user.password == user.password:
         valid_token = tokenGen(sel_user)
         return {"code": 0, "token": valid_token}
     return {"code": -1}
 
 
-# 用户 注册
-@appUser.post("/register")
-async def register(user: User):
-    if userDao().addItem(user):
-        return {"code": 0}
-    return {"code": -1}
+# # 用户 注册
+# @appUser.post("/register")
+# async def register(user: User):
+#
 
 
 # 所有用户 修改用户信息

@@ -44,13 +44,15 @@ async def getAllOrder(token):
             "paid_at": item.end_time,
             "payment": item.order_amount,
             "total_fee": item.order_amount,
-            "items": await getMealDicByOrder(item)
+            "items": await getMealDicByOrder(item),
+            "status": item.order_state
         })
     return res
 
 
 @appOrder.post("/getOrderDetail/{token}/", summary='查询详单')
 async def getOrderDetail(token, order: Order):
+    print(order)
     cur_order = orderDao().queryItem(order)
     orderDic = {
         "no": cur_order.id,
@@ -64,7 +66,8 @@ async def getOrderDetail(token, order: Order):
         "remarks": "nothing.",
         "total_fee": cur_order.order_amount,
         "created_at": cur_order.start_time,
-        "items": await getMealDicByOrder(cur_order)
+        "items": await getMealDicByOrder(cur_order),
+        "status": cur_order.order_state
     }
     return orderDic
 
