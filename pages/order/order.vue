@@ -111,6 +111,23 @@ export default {
 		}
 	},
 	methods: {
+		getData: function(){
+			return new Promise((resolve,reject) =>{
+				uni.request({
+									url:"http://127.0.0.1:8000/Order/getAllOrder/vtiw1%C2%80%7Dwtht6",
+									method:"POST",
+									success: (res) => {
+										//赋值
+										this.orders = res.data
+										// console.log(JSON.stringify(this.orders))
+										resolve('suc')
+									},
+									fail: (err) => {
+										reject('err')
+									}
+								})
+			})
+		},
 		async switchTab(index) {
 			if(this.tabIndex === index) return
 			this.tabIndex = index
@@ -133,7 +150,7 @@ export default {
 		},
 		async getOrders() {
 			if(!this.orderMenuIndex) {
-				this.orders = await this.$api('orders')
+				await this.getData()
 			} else {
 				this.storeOrders = await this.$api('storeOrders')
 			}

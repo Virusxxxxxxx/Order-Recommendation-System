@@ -32,9 +32,9 @@
 								<view class="d-flex align-items-center mt-40">
 									<view class="flex-fill d-flex flex-column">
 										<view class="font-size-base mb-10">{{ item.sname }}</view>
-										<view class="font-size-extra-sm text-color-assist">
+<!-- 										<view class="font-size-extra-sm text-color-assist">
 											{{ materialsText(item.materials) }}
-										</view>
+										</view> -->
 									</view>
 									<view class="flex-shrink-0 font-weight-bold ml-40">x{{ item.quantity }}</view>
 									<view class="flex-shrink-0 font-weight-bold ml-40">￥{{ item.price }}</view>
@@ -63,7 +63,7 @@
 						<view class="w-100 d-flex flex-column font-size-extra-sm text-color-assist">
 							<view class="mb-10">如需退款，请致电门店</view>
 							<view class="mb-10">下单时间：{{ order.paid_at }}</view>
-							<view class="mb-10">取茶号：{{ order.pickup_no }}</view>
+							<view class="mb-10">取餐号：{{ order.pickup_no }}</view>
 							<view class="mb-10">订单编号：{{ order.no }}</view>
 							<view class="mb-10">备注信息：{{ order.remarks }}</view>
 						</view>
@@ -94,15 +94,45 @@
 			}
 		},
 		computed: {
-			materialsText() {
-				return materials => {
-					let arr = []
-					materials.forEach(item => arr.push(item.name))
-					return arr.join(',')
-				}
-			}
+			// materialsText() {
+			// 	return materials => {
+			// 		let arr = []
+			// 		materials.forEach(item => arr.push(item.name))
+			// 		return arr.join(',')
+			// 	}
+			// }
+		},
+		async onLoad(options) {
+			/* 为了方便测试，这里使用同一个订单数据 */
+			await this.getData()
 		},
 		methods: {
+			getData: function(){
+				return new Promise((resolve,reject) =>{
+					uni.request({
+										url:"http://127.0.0.1:8000/Order/getOrderDetail/vtiw1%C2%80%7Dwtht6",
+										data:{
+										  "id": 634,
+										  "user_id": 0,
+										  "meal_id_list": "string",
+										  "start_time": "2022-05-27T07:20:51.463Z",
+										  "end_time": "2022-05-27T07:20:51.463Z",
+										  "order_state": "string",
+										  "order_amount": 0
+										},
+										method:"POST",
+										success: (res) => {
+											//赋值
+											this.order = res.data
+											console.log(JSON.stringify(res.data))
+											resolve('suc')
+										},
+										fail: (err) => {
+											reject('err')
+										}
+									})
+				})
+			},
 			toComment(id, name) {
 				this.$router.push({
 					  path: '/pages/comment/comment',
@@ -113,10 +143,6 @@
 					})
 			}
 		},
-		async onLoad(options) {
-			/* 为了方便测试，这里使用同一个订单数据 */
-			this.order = await this.$api('orderDetail')
-		}
 	}
 </script>
 
