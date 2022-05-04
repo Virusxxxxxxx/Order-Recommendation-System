@@ -13,14 +13,40 @@
 		<swiper :current="tabIndex" :duration="300" class="swiper" :show-scrollbar="false">
 			<!-- 当前订单 begin -->
 			<swiper-item @touchmove.stop="handleSwiperItemChange">
-				<view class="no-order-content">
-					<image src="https://go.cdn.heytea.com/storage/ad/2020/05/20/0bdb360866d94aa4a4404c0b676a1982.jpg"></image>
-					<view class="tips">
-						<view>您今天还没有下单</view>
-						<view>快来选择你的菜</view>
+				<scroll-view scroll-y="true" class="orders-scroll">
+					<view class="wrapper">
+						<view class="order-list">
+							<navigator class="order" v-for="(order, index) in orders" :key="index" v-if="order.status == 'doing'" open-type="navigate" :url="'/pages/order/detail?id=' + order.no">
+								<view class="header">
+									<view class="flex-fill font-size-medium">{{ order.shop.name }}</view>
+									<view class="status">
+										<view>进行中</view>
+										<image src="/static/images/common/black_arrow_right.png"></image>
+									</view>
+								</view>
+								<scroll-view scroll-x>
+									<view class="images">
+										<image :src="item.image" v-for="(item, index) in order.items" :key="index"></image>
+									</view>
+								</scroll-view>
+								<view class="info">
+									<view class="left">
+										<view>订单编号：{{ order.no }}</view>
+										<view>下单时间：{{ order.created_at }}</view>
+									</view>
+									<view class="right">
+										￥{{ order.total_fee }}
+									</view>
+								</view>
+								<view class="action">
+									<!-- <button type="default" hover-class="none">开发票</button>
+									<button type="default" hover-class="none">查看评论</button> -->
+									<button type="primary" plain hover-class="none">查看订单</button>
+								</view>
+							</navigator>
+						</view>
 					</view>
-					<button type="primary" class="font-size-lg" hover-class="none" @click="switchToIndex();">去下单</button>
-				</view>
+				</scroll-view>
 			</swiper-item>
 			<!-- 当前订单 end -->
 			<!-- 历史订单 begin -->
@@ -42,7 +68,7 @@
 							<scroll-view scroll-y="true" class="orders-scroll">
 								<view class="wrapper">
 									<view class="order-list">
-										<navigator class="order" v-for="(order, index) in orders" :key="index" open-type="navigate" :url="'/pages/order/detail?id=' + order.id">
+										<navigator class="order" v-for="(order, index) in orders" :key="index" v-if="order.status == 'finish'" open-type="navigate" :url="'/pages/order/detail?id=' + order.no">
 											<view class="header">
 												<view class="flex-fill font-size-medium">{{ order.shop.name }}</view>
 												<view class="status">
@@ -94,6 +120,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
 	data() {
 		return {
@@ -103,9 +130,14 @@ export default {
 			storeOrders: []
 		}
 	},
-	async onLoad() {
+	async onLoad(options) {
+		await this.getData()
+	},
+	async onShow() {
+		await this.getData()
 	},
 	computed: {
+		...mapState(['token']),
 		batchInvoiceVisible() {
 			return (!this.orderMenuIndex && this.orders.length) || (this.orderMenuIndex && this.storeOrders.length)
 		}
@@ -114,7 +146,7 @@ export default {
 		getData: function(){
 			return new Promise((resolve,reject) =>{
 				uni.request({
-									url:"http://127.0.0.1:8000/Order/getAllOrder/vtiw1%C2%80%7Dwtht6",
+									url:"http://127.0.0.1:8000/Order/getAllOrder/"+this.$store.state.token,
 									method:"POST",
 									success: (res) => {
 										//赋值
@@ -150,7 +182,7 @@ export default {
 		},
 		async getOrders() {
 			if(!this.orderMenuIndex) {
-				await this.getData()
+				// await this.getData()
 			} else {
 				this.storeOrders = await this.$api('storeOrders')
 			}

@@ -1,7 +1,7 @@
 <template>
 	<view class="container">
 		<view class="brand">
-			<image src="https://wx.qlogo.cn/mmopen/vi_32/vM0qx5z4BQUQU4icZNct8Oib0Q0ypMW6hdhejkBxrTzibvYHtdyaQI85hsWvL6PoA3ic3Jjwn99YdfxEj1ib7gvaJeQ/132" class="avatar"></image>
+			<image src="https://bpic.51yuansu.com/pic3/cover/01/69/80/595f67c2239cb_610.jpg?x-oss-process=image/sharpen,100" class="avatar"></image>
 			<view class="username">tinypuppet</view>
 		</view>
 		<view class="user-form">

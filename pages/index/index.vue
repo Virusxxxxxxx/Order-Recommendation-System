@@ -178,7 +178,7 @@
 			}
 		},
 		computed: {
-			...mapState(['orderType', 'address']),
+			...mapState(['orderType', 'address', 'token']),
 			productCartNum() {	//计算单个饮品添加到购物车的数量
 				return id => this.cart.reduce((acc, cur) => {
 						if(cur.id === id) {
@@ -196,12 +196,17 @@
 			this.currentCategoryId = this.categories.length && this.categories[0].id
 			this.$nextTick(() => this.calcSize())
 		},
+		async onShow(){
+			await this.getData()
+			this.currentCategoryId = this.categories.length && this.categories[0].id
+			this.$nextTick(() => this.calcSize())
+		},
 		methods: {
 			...mapMutations(['SET_ORDER_TYPE']),
 			getData: function(){
 				return new Promise((resolve,reject) =>{
 					uni.request({
-										url:"http://127.0.0.1:8000/Meal/getAllMeals/vtiw1%C2%80%7Dwtht6?limit=100",
+										url:"http://127.0.0.1:8000/Meal/getAllMeals/"+this.$store.state.token+"?limit=100",
 										success: (res) => {
 											//赋值
 											this.categories = res.data

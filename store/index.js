@@ -8,6 +8,7 @@ const store = new Vuex.Store({
 	state: {
 		userInfo: {},
 		isLogin: false,
+		token: "",
 		orderType: 'takein',
 		addresses: [{
 			"id": 1,
@@ -40,6 +41,9 @@ const store = new Vuex.Store({
 		},
 		SET_ISLOGIN(state, isLogin) {
 			state.isLogin = isLogin
+		},
+		SET_TOKEN(state, token) {
+			state.token = token
 		}
 	}
 })

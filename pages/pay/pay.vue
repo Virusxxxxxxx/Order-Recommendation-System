@@ -58,7 +58,7 @@
 			<view class="mr-30">
 				合计：<text class="font-size-lg font-weight-bold">￥{{ cartAmount }}</text>
 			</view>
-			<button type="primary">支付</button>
+			<button type="primary" @tap="pay()">支付</button>
 		</view>
 	</view>
 </template>
@@ -73,6 +73,7 @@
 		data() {
 			return {
 				cart: uni.getStorageSync('cart'),
+				dataDic: {}
 			}
 		},
 		computed: {
@@ -80,12 +81,41 @@
 				return this.cart.reduce((acc, cur) => acc + cur.number, 0)
 			},
 			cartAmount() {
+				for (const v of this.cart) {
+					this.dataDic[v.id] = v.number
+				}
 				return this.cart.reduce((acc, cur) => acc + cur.number * cur.price, 0)
 			},
 			remark() {
 				return this.$store.state.remark
 			}
-		}
+		},
+		methods: {
+			pay: function() {
+				return new Promise((resolve,reject) =>{
+					uni.request({
+										url:"http://127.0.0.1:8000/Order/submitOrder/"+this.$store.state.token,
+										data: this.dataDic,
+										method:"POST",
+										success: (res) => {
+											//赋值
+											// console.log(res.data.id)
+											this.$router.push({
+												  path: '/pages/pay/pay-success',
+												  query: {
+													id: res.data.id,
+												  }
+												})
+											// console.log(JSON.stringify(res.data))
+											resolve('suc')
+										},
+										fail: (err) => {
+											reject('err')
+										}
+									})
+					})
+			}
+		},
 	}
 </script>
 

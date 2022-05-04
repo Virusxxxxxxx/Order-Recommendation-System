@@ -9,7 +9,7 @@
 		<view class="content" v-if="Object.keys(order).length>0">
 			<view class="order-box">
 				<image src="/static/images/order/icon_making.png" class="status-icon"/>
-				<view class="text-color-primary font-size-lg font-weight-bold mb-10">订单已完成</view>
+				<view class="text-color-primary font-size-lg font-weight-bold mb-10">{{order.status=="finish"?'订单已完成':'订单进行中'}}</view>
 				<view class="text-color-assist font-size-sm">感谢您对爱尚点餐的支持，欢迎再次光临</view>
 			</view>
 			<view class="flex-fill overflow-auto">
@@ -83,54 +83,52 @@
 
 <script>
 	import listCell from '@/components/list-cell/list-cell.vue'
-	
+	import { mapState } from 'vuex'
 	export default {
 		components: {
 			listCell
 		},
 		data() {
 			return {
-				order: {}
+				order: {},
+				id: 0
 			}
 		},
 		computed: {
-			// materialsText() {
-			// 	return materials => {
-			// 		let arr = []
-			// 		materials.forEach(item => arr.push(item.name))
-			// 		return arr.join(',')
-			// 	}
-			// }
+			...mapState(['token'])
 		},
 		async onLoad(options) {
 			/* 为了方便测试，这里使用同一个订单数据 */
+			console.log(options)
+			this.id = options.id
 			await this.getData()
 		},
 		methods: {
 			getData: function(){
 				return new Promise((resolve,reject) =>{
 					uni.request({
-										url:"http://127.0.0.1:8000/Order/getOrderDetail/vtiw1%C2%80%7Dwtht6",
-										data:{
-										  "id": 634,
-										  "user_id": 0,
-										  "meal_id_list": "string",
-										  "start_time": "2022-05-27T07:20:51.463Z",
-										  "end_time": "2022-05-27T07:20:51.463Z",
-										  "order_state": "string",
-										  "order_amount": 0
-										},
-										method:"POST",
-										success: (res) => {
-											//赋值
-											this.order = res.data
-											console.log(JSON.stringify(res.data))
-											resolve('suc')
-										},
-										fail: (err) => {
-											reject('err')
-										}
-									})
+						url:"http://127.0.0.1:8000/Order/getOrderDetail/"+this.$store.state.token,
+						data:{
+						  "id": this.id,
+						  "user_id": 0,
+						  "meal_id_list": "string",
+						  "start_time": "2022-05-27T07:20:51.463Z",
+						  "end_time": "2022-05-27T07:20:51.463Z",
+						  "order_state": "string",
+						  "order_amount": 0
+						},
+						method:"POST",
+						success: (res) => {
+							//赋值
+							
+							this.order = res.data
+							// console.log(JSON.stringify(res.data))
+							resolve('suc')
+						},
+						fail: (err) => {
+							reject('err')
+						}
+					})
 				})
 			},
 			toComment(id, name) {

@@ -2,8 +2,7 @@
 	<view class="container">
 		<view class="section">
 			<view class="d-flex justify-content-between align-items-center pt-40 pb-40">
-				<view class="font-size-lg font-weight-bold">{{ this.$route.query.cname }}</view>
-				<!-- <button type="primary" plain class="member-btn" @tap="member">登录喜茶星球</button> -->
+				<view class="font-size-lg font-weight-bold">菜品：{{ this.$route.query.cname }}</view>
 			</view>
 			<view class="experience-card">
 				<view>
@@ -38,45 +37,35 @@
 		},
 		data() {
 			return {
-				benefits: [
-					{title: '喜茶满减券', image: '/static/images/my/member_benefits/me_rights_icon_1jia1.png'},
-					{title: '喜茶买赠券', image: '/static/images/my/member_benefits/me_rights_icon_qingshi.png'}
-				],
-				disBenefits: [
-					{title: '星球赠饮劵', image: '/static/images/my/member_benefits/me_rights_icon_free_dis.png'},
-					{title: '买一送一劵', image: '/static/images/my/member_benefits/me_rights_icon_1jia1_dis.png'},
-					{title: '买二送一劵', image: '/static/images/my/member_benefits/me_rights_icon_2jia1_dis.png'},
-					{title: '喜茶轻食劵', image: '/static/images/my/member_benefits/me_rights_icon_qingshi_dis.png'},
-					{title: '优先券', image: '/static/images/my/member_benefits/me_rights_icon_youxian_new_dis.png'},
-					{title: '免运费劵', image: '/static/images/my/member_benefits/me_rights_icon_waimai_new_dis.png'}
-				],
-				baseURL: "",
 				rateValue: 5,
 			}
 		},
 		methods: {
 			submit() {
 				uni.request({
-					header: {
-							  'Content-Type': 'application/json'
-						   }, 
-					url: this.baseURL+"comment", //仅为示例，并非真实接口地址。
+					url: "http://127.0.0.1:8000/Comment/commentMeal/"+this.$store.state.token,
 					method: 'POST',
 					data: {
-						id: this.$route.query.cid,
 						score: this.rateValue,
+						meal_id: this.$route.query.cid,
+						content: "default"
 					},
-					dataType:'json',
 					success: (res) => {
-							var result = JSON.parse(res.data.projectList);
+							// console.log(res.data)
+							if(res.data.code == 0){
+								uni.showToast({
+									title: "评论成功"
+								})
+							}else{
+								uni.showToast({
+									title: "内部错误"
+								})
+							}
 						}
 				});
 			},
 			onChangeRate(e) {
-				this.rateValue=JSON.stringify(e.value),
-				uni.showToast({
-					title:this.rateValue
-				})
+				this.rateValue=JSON.stringify(e.value)
 			}
 		}
 	}

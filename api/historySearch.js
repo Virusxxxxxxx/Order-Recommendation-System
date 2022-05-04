@@ -1,6 +1,6 @@
 export default [{
-	"productName": "芝芝莓莓 ®",
-	"productId": 932,
+	"productName": "meal0",
+	"productId": 0,
 	"type": 1,
 	"images": [{
 		"id": 156414,

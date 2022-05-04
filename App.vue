@@ -1,5 +1,8 @@
 <script>
 	export default {
+		globalData: {  
+			text: ''
+		},
 		onLaunch: function() {
 		},
 		onShow: function() {

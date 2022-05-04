@@ -131,6 +131,15 @@
             }
             
         }
+        ,{
+            "path" : "pages/pay/pay-success",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
     ],
 	"tabBar": {
 		"color": "#999999",
