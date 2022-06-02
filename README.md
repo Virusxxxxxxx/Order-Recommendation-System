@@ -22,3 +22,7 @@ app.py 中，```@app.post("/register")```为*函数路由*，下方 ```async def
 
 2、访问```http://127.0.0.1:8000/docs```
    
+## 项目成员 Project Member
+* 康宇佳 202130310146
+* 胡鑫鑫 202130310146
+* 赖&nbsp;&nbsp;&nbsp;&nbsp;埏 202130310173
